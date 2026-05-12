@@ -242,3 +242,6 @@ frontend/.env*.local
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+HANDOFF.md
+!frontend/app/lib/

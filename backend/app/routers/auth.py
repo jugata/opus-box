@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
@@ -11,6 +12,27 @@ from datetime import datetime, timedelta
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+_bearer = HTTPBearer()
+
+def  get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(_bearer),
+    db: Session = Depends(get_db),
+) -> User:
+    token = credentials.credentials
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user_id: int = int(payload["sub"])
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, KeyError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
 
 class RegisterRequest(BaseModel):
     email: str

@@ -1,6 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import composers, works, conductors, orchestras, recordings, auth
+from app.routers import (
+  composers,
+  works,
+  conductors,
+  orchestras,
+  recordings,
+  auth,
+  listening_sessions
+)
 
 app = FastAPI(title="OpusBox API")
 
@@ -18,7 +26,7 @@ app.include_router(conductors.router)
 app.include_router(orchestras.router)
 app.include_router(recordings.router)
 app.include_router(auth.router)
-
+app.include_router(listening_sessions.router)
 @app.get("/")
 def root():
     return {"message": "OpusBox API"}
