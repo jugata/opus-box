@@ -22,6 +22,9 @@ export default function Navbar() {
       <div className="flex gap-3 text-sm items-center">
         {session ? (
           <>
+            <Link href="/journal" className="text-gray-600 hover:text-black transition-colors">
+              Journal
+            </Link>
             <span className="text-gray-600">Hi, {(session as any).user?.name ?? "there"}</span>
             <button
               onClick={() => signOut()}

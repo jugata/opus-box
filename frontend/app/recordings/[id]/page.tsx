@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getRecording, getWork, getComposer, getConductor, getOrchestra } from "../../lib/api";
+import LogSessionButton from "../../components/LogSessionButton";
 
 export default async function RecordingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -80,6 +81,8 @@ export default async function RecordingPage({ params }: { params: Promise<{ id: 
           </>
         )}
       </dl>
+
+      <LogSessionButton recordingId={recording.id} />
     </main>
   );
 }
