@@ -1,20 +1,5 @@
 import Link from "next/link";
-
-async function getComposer(id: string) {
-  const res = await fetch(`http://localhost:8000/composers/${id}`, {
-    cache: "no-store",
-  });
-  if (!res.ok) throw new Error("Composer not found");
-  return res.json();
-}
-
-async function getWorks(composerId: string) {
-  const res = await fetch(`http://localhost:8000/works?composer_id=${composerId}`, {
-    cache: "no-store",
-  });
-  if (!res.ok) throw new Error("Failed to fetch works");
-  return res.json();
-}
+import { getComposer, getWorks } from "../../lib/api";
 
 export default async function ComposerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -37,7 +22,7 @@ export default async function ComposerPage({ params }: { params: Promise<{ id: s
         <p className="text-gray-500">No works found.</p>
       ) : (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {works.map((work: any) => (
+          {works.map((work) => (
             <div key={work.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
               <h3 className="font-medium">{work.title}</h3>
               {work.opus_number && (
