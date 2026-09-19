@@ -20,6 +20,12 @@ def main():
         works = ingester.ingest_works(composer, mbid)
         print(f"  Works saved: {len(works)}")
 
+        recording_count = 0
+        for work in works:
+            recordings = ingester.ingest_recordings(work)
+            recording_count += len(recordings)
+        print(f"  Recordings saved: {recording_count}")
+
     db.close()
 
 if __name__ == "__main__":

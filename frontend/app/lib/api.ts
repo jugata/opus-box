@@ -112,8 +112,9 @@ export function getOrchestra(id: string | number): Promise<Orchestra> {
 // Recordings
 // ---------------------------------------------------------------------------
 
-export function getRecordings(): Promise<Recording[]> {
-  return apiFetch("/recordings");
+export function getRecordings(workId?: string | number): Promise<Recording[]> {
+  const qs = workId != null ? `?work_id=${workId}` : "";
+  return apiFetch(`/recordings${qs}`);
 }
 
 export function getRecording(id: string | number): Promise<Recording> {

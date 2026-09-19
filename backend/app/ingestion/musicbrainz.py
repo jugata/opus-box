@@ -61,3 +61,79 @@ class MusicBrainzIngester:
 
         self.db.commit()
         return works
+
+    def fetch_recordings_for_work(self, work_mbid: str) -> list[dict]:
+        result = musicbrainzngs.get_work_by_id(work_mbid, includes=["recording-rels"])
+        return result["work"].get("recording-relation-list", [])
+
+    def fetch_recording_artists(self, recording_mbid: str) -> list[dict]:
+        result = musicbrainzngs.get_recording_by_id(recording_mbid, includes=["artist-rels"])
+        return result["recording"].get("artist-relation-list", [])
+
+    def _get_or_create_conductor(self, artist: dict) -> Conductor:
+        existing = self.db.query(Conductor).filter(
+            Conductor.musicbrainz_id == artist["id"]
+        ).first()
+        if existing:
+            return existing
+        conductor = Conductor(name=artist["name"], musicbrainz_id=artist["id"])
+        self.db.add(conductor)
+        self.db.flush()
+        return conductor
+
+    def _get_or_create_orchestra(self, artist: dict) -> Orchestra:
+        existing = self.db.query(Orchestra).filter(
+            Orchestra.musicbrainz_id == artist["id"]
+        ).first()
+        if existing:
+            return existing
+        orchestra = Orchestra(
+            name=artist["name"],
+            country=artist.get("country"),
+            musicbrainz_id=artist["id"],
+        )
+        self.db.add(orchestra)
+        self.db.flush()
+        return orchestra
+
+    def ingest_recordings(self, work: Work, limit: int = 3) -> list[Recording]:
+        """Pull up to `limit` recordings (with conductor/orchestra) for a work."""
+        rels = self.fetch_recordings_for_work(work.musicbrainz_id)
+        recordings = []
+
+        for rel in rels[:limit]:
+            rec_data = rel.get("recording")
+            if not rec_data:
+                continue
+
+            existing = self.db.query(Recording).filter(
+                Recording.musicbrainz_id == rec_data["id"]
+            ).first()
+            if existing:
+                recordings.append(existing)
+                continue
+
+            conductor = None
+            orchestra = None
+            for arel in self.fetch_recording_artists(rec_data["id"]):
+                artist = arel.get("artist")
+                if not artist:
+                    continue
+                if arel.get("type") == "conductor":
+                    conductor = self._get_or_create_conductor(artist)
+                elif arel.get("type") == "performing orchestra":
+                    orchestra = self._get_or_create_orchestra(artist)
+
+            length = rec_data.get("length")
+            recording = Recording(
+                work_id=work.id,
+                conductor_id=conductor.id if conductor else None,
+                orchestra_id=orchestra.id if orchestra else None,
+                duration=int(length) // 1000 if length else None,
+                musicbrainz_id=rec_data["id"],
+            )
+            self.db.add(recording)
+            recordings.append(recording)
+
+        self.db.commit()
+        return recordings
