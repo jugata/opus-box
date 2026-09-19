@@ -17,6 +17,18 @@ from .auth import get_current_user  # reuse the JWT dependency from auth router
 router = APIRouter(prefix="/listening-sessions", tags=["listening-sessions"])
 
 
+def _with_relations(query):
+    return query.options(
+        joinedload(ListeningSession.recording)
+        .joinedload(Recording.work)
+        .joinedload(Work.composer),
+        joinedload(ListeningSession.recording)
+        .joinedload(Recording.conductor),
+        joinedload(ListeningSession.recording)
+        .joinedload(Recording.orchestra),
+    )
+
+
 # ---------------------------------------------------------------------------
 # POST /listening-sessions  — log a new session
 # ---------------------------------------------------------------------------
@@ -44,16 +56,7 @@ def create_listening_session(
 
     # Re-fetch with relationships for the response
     return (
-        db.query(ListeningSession)
-        .options(
-            joinedload(ListeningSession.recording)
-            .joinedload(Recording.work)
-            .joinedload(Work.composer),
-            joinedload(ListeningSession.recording)
-            .joinedload(Recording.conductor),
-            joinedload(ListeningSession.recording)
-            .joinedload(Recording.orchestra),
-        )
+        _with_relations(db.query(ListeningSession))
         .filter(ListeningSession.id == session.id)
         .first()
     )
@@ -70,16 +73,7 @@ def get_my_listening_sessions(
     limit: int = 50,
 ):
     return (
-        db.query(ListeningSession)
-        .options(
-            joinedload(ListeningSession.recording)
-            .joinedload(Recording.work)
-            .joinedload(Work.composer),
-            joinedload(ListeningSession.recording)
-            .joinedload(Recording.conductor),
-            joinedload(ListeningSession.recording)
-            .joinedload(Recording.orchestra),
-        )
+        _with_relations(db.query(ListeningSession))
         .filter(ListeningSession.user_id == current_user.id)
         .order_by(ListeningSession.listened_at.desc())
         .offset(skip)
@@ -98,16 +92,7 @@ def get_listening_session(
     current_user=Depends(get_current_user),
 ):
     session = (
-        db.query(ListeningSession)
-        .options(
-            joinedload(ListeningSession.recording)
-            .joinedload(Recording.work)
-            .joinedload(Work.composer),
-            joinedload(ListeningSession.recording)
-            .joinedload(Recording.conductor),
-            joinedload(ListeningSession.recording)
-            .joinedload(Recording.orchestra),
-        )
+        _with_relations(db.query(ListeningSession))
         .filter(
             ListeningSession.id == session_id,
             ListeningSession.user_id == current_user.id,
