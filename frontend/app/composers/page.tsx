@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getComposers } from "../lib/api";
+import ComposerSearch from "../components/ComposerSearch";
 
 export default async function ComposersPage() {
   const composers = await getComposers();
@@ -7,6 +8,7 @@ export default async function ComposersPage() {
   return (
     <main className="min-h-screen p-8">
       <h1 className="text-4xl font-bold mb-6">Composers</h1>
+      <ComposerSearch />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {composers.map((composer) => (
           <Link key={composer.id} href={`/composers/${composer.id}`}>

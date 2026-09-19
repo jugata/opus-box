@@ -19,6 +19,10 @@ class MusicBrainzIngester:
         result = musicbrainzngs.get_artist_by_id(mbid, includes=["works"])
         return result["artist"]
 
+    def search_composers(self, query: str, limit: int = 5) -> list[dict]:
+        result = musicbrainzngs.search_artists(artist=query, limit=limit)
+        return result.get("artist-list", [])
+
     def ingest_composer(self, mbid: str) -> Composer:
         existing = self.db.query(Composer).filter(
             Composer.musicbrainz_id == mbid

@@ -17,3 +17,13 @@ class ComposerResponse(ComposerBase):
     id: int
 
     model_config = {"from_attributes": True}
+
+class ComposerCandidate(BaseModel):
+    musicbrainz_id: str
+    name: str
+    disambiguation: Optional[str] = None
+    nationality: Optional[str] = None
+
+class ComposerSearchResult(BaseModel):
+    local: list[ComposerResponse]
+    candidates: list[ComposerCandidate]
