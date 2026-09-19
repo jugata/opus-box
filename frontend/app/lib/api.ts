@@ -79,6 +79,28 @@ export function getComposer(id: string | number): Promise<Composer> {
   return apiFetch(`/composers/${id}`);
 }
 
+export interface ComposerCandidate {
+  musicbrainz_id: string;
+  name: string;
+  disambiguation?: string;
+  nationality?: string;
+}
+
+export interface ComposerSearchResult {
+  local: Composer[];
+  candidates: ComposerCandidate[];
+}
+
+export function searchComposers(q: string): Promise<ComposerSearchResult> {
+  return apiFetch(`/composers/search?q=${encodeURIComponent(q)}`);
+}
+
+export async function importComposer(musicbrainzId: string): Promise<Composer> {
+  const res = await fetch(`${API}/composers/import/${musicbrainzId}`, { method: "POST" });
+  if (!res.ok) throw new Error(`Failed to import composer (${res.status})`);
+  return res.json();
+}
+
 // ---------------------------------------------------------------------------
 // Works
 // ---------------------------------------------------------------------------
