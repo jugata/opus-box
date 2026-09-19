@@ -11,17 +11,6 @@ from app.database import Base
 
 musicbrainzngs.set_useragent("OpusBox", "0.1", "your@email.com")
 
-import ssl
-import urllib.request
-
-ssl_context = ssl.create_default_context()
-ssl_context.check_hostname = False
-ssl_context.verify_mode = ssl.CERT_NONE
-
-https_handler = urllib.request.HTTPSHandler(context=ssl_context)
-opener = urllib.request.build_opener(https_handler)
-urllib.request.install_opener(opener)
-
 class MusicBrainzIngester:
     def __init__(self, db: Session):
         self.db = db
