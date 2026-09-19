@@ -1,15 +1,18 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.recording import Recording
 from app.schemas.recording import RecordingCreate, RecordingResponse
-from typing import List
+from typing import List, Optional
 
 router = APIRouter(prefix="/recordings", tags=["recordings"])
 
 @router.get("/", response_model=List[RecordingResponse])
-def get_recordings(db: Session = Depends(get_db)):
-    return db.query(Recording).all()
+def get_recordings(work_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
+    query = db.query(Recording)
+    if work_id:
+        query = query.filter(Recording.work_id == work_id)
+    return query.all()
 
 @router.get("/{recording_id}", response_model=RecordingResponse)
 def get_recording(recording_id: int, db: Session = Depends(get_db)):
