@@ -44,9 +44,6 @@ def import_composer(musicbrainz_id: str, db: Session = Depends(get_db)):
         composer = ingester.ingest_composer(musicbrainz_id)
     except musicbrainzngs.ResponseError:
         raise HTTPException(status_code=404, detail="Composer not found on MusicBrainz")
-    works = ingester.ingest_works(composer, musicbrainz_id)
-    for work in works:
-        ingester.ingest_recordings(work)
     return composer
 
 @router.get("/{composer_id}", response_model=ComposerResponse)

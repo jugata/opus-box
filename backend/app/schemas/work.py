@@ -18,3 +18,12 @@ class WorkResponse(WorkBase):
     id: int
 
     model_config = {"from_attributes": True}
+
+class WorkCandidate(BaseModel):
+    musicbrainz_id: str
+    title: str
+    disambiguation: Optional[str] = None
+
+class WorkSearchResult(BaseModel):
+    local: list[WorkResponse]
+    candidates: list[WorkCandidate]
