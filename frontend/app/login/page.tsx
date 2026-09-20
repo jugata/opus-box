@@ -33,44 +33,45 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-sm border rounded-lg p-8">
-        <h1 className="text-2xl font-bold mb-6">Log in</h1>
+    <main className="min-h-screen flex items-center justify-center p-8">
+      <div className="app-card w-full max-w-sm">
+        <p className="label-tag mb-2">Welcome back</p>
+        <h1 className="text-2xl font-extrabold mb-6" style={{ fontFamily: "var(--font-display)" }}>Log in</h1>
         {error && (
-          <p className="text-red-500 text-sm mb-4">{error}</p>
+          <p className="text-sm mb-4" style={{ color: "var(--violet)" }}>{error}</p>
         )}
         <div className="flex flex-col gap-4">
           <div>
-            <label className="text-sm font-medium block mb-1">Email</label>
+            <label className="label-tag block mb-1.5">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border rounded px-3 py-2 text-sm"
+              className="field"
               placeholder="you@example.com"
             />
           </div>
           <div>
-            <label className="text-sm font-medium block mb-1">Password</label>
+            <label className="label-tag block mb-1.5">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border rounded px-3 py-2 text-sm"
+              className="field"
               placeholder="••••••••"
             />
           </div>
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="bg-black text-white rounded-full py-2 text-sm hover:bg-gray-800 transition-colors disabled:opacity-50"
+            className="pill-btn justify-center mt-2"
           >
-            {loading ? "Logging in..." : "Log in"}
+            {loading ? "Logging in…" : "Log in"}
           </button>
         </div>
-        <p className="text-sm text-gray-500 mt-4 text-center">
-          Don't have an account?{" "}
-          <Link href="/register" className="text-black font-medium hover:underline">
+        <p className="text-sm mt-5 text-center" style={{ color: "var(--soft)" }}>
+          Don&rsquo;t have an account?{" "}
+          <Link href="/register" className="text-link">
             Sign up
           </Link>
         </p>

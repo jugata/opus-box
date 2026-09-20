@@ -41,36 +41,28 @@ export default function WorkSearch({ composerId }: { composerId: number }) {
 
   return (
     <div className="mb-8">
-      <form onSubmit={handleSearch} className="flex gap-2 max-w-md">
+      <form onSubmit={handleSearch} className="flex gap-3 max-w-md">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search this composer's works..."
-          className="flex-1 border rounded px-3 py-2 text-sm"
+          placeholder="Search this composer's works…"
+          className="field flex-1"
         />
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-black text-white text-sm px-4 py-2 rounded-full hover:bg-gray-800 transition-colors disabled:opacity-50"
-        >
-          {loading ? "Searching..." : "Search"}
+        <button type="submit" disabled={loading} className="pill-btn">
+          {loading ? "Searching…" : "Search"}
         </button>
       </form>
 
-      {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+      {error && <p className="text-sm mt-2" style={{ color: "var(--violet)" }}>{error}</p>}
 
       {result && (
-        <div className="mt-4 flex flex-col gap-4 max-w-md">
+        <div className="mt-5 flex flex-col gap-5 max-w-md">
           {result.local.length > 0 && (
             <div>
-              <p className="text-xs text-gray-400 mb-2">Already in OpusBox</p>
+              <p className="label-tag mb-2">Already in OpusBox</p>
               <div className="flex flex-col gap-2">
                 {result.local.map((w) => (
-                  <Link
-                    key={w.id}
-                    href={`/works/${w.id}`}
-                    className="border rounded-lg p-3 text-sm hover:shadow-md transition-shadow"
-                  >
+                  <Link key={w.id} href={`/works/${w.id}`} className="app-card text-sm block">
                     {w.title}
                   </Link>
                 ))}
@@ -80,25 +72,22 @@ export default function WorkSearch({ composerId }: { composerId: number }) {
 
           {result.candidates.length > 0 && (
             <div>
-              <p className="text-xs text-gray-400 mb-2">Found on MusicBrainz</p>
+              <p className="label-tag mb-2">Found on MusicBrainz</p>
               <div className="flex flex-col gap-2">
                 {result.candidates.map((c) => (
-                  <div
-                    key={c.musicbrainz_id}
-                    className="border rounded-lg p-3 flex items-center justify-between gap-3"
-                  >
+                  <div key={c.musicbrainz_id} className="app-card flex items-center justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{c.title}</p>
+                      <p className="text-sm truncate">{c.title}</p>
                       {c.disambiguation && (
-                        <p className="text-xs text-gray-400 truncate">{c.disambiguation}</p>
+                        <p className="label-tag truncate mt-0.5">{c.disambiguation}</p>
                       )}
                     </div>
                     <button
                       onClick={() => handleImport(c.musicbrainz_id)}
                       disabled={importingId === c.musicbrainz_id}
-                      className="shrink-0 text-xs bg-black text-white px-3 py-1.5 rounded-full hover:bg-gray-800 transition-colors disabled:opacity-50"
+                      className="pill-btn shrink-0"
                     >
-                      {importingId === c.musicbrainz_id ? "Adding..." : "Add"}
+                      {importingId === c.musicbrainz_id ? "Adding…" : "Add"}
                     </button>
                   </div>
                 ))}
@@ -107,7 +96,7 @@ export default function WorkSearch({ composerId }: { composerId: number }) {
           )}
 
           {result.local.length === 0 && result.candidates.length === 0 && (
-            <p className="text-sm text-gray-400">No matches found.</p>
+            <p className="text-sm" style={{ color: "var(--faint)" }}>No matches found.</p>
           )}
         </div>
       )}

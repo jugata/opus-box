@@ -21,8 +21,9 @@ function formatDate(iso: string) {
 function StarRating({ value }: { value?: number }) {
   if (!value) return null;
   return (
-    <span className="text-xs text-gray-500">
-      {"★".repeat(value)}{"☆".repeat(5 - value)}
+    <span className="text-xs" style={{ color: "var(--gold)" }}>
+      {"★".repeat(value)}
+      <span style={{ color: "var(--line)" }}>{"★".repeat(5 - value)}</span>
     </span>
   );
 }
@@ -74,33 +75,33 @@ function SessionCard({
   }
 
   return (
-    <div className="border rounded-lg p-5">
+    <div className="app-card">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           {work ? (
-            <p className="font-medium truncate">
-              <Link href={`/recordings/${session.recording_id}`} className="hover:underline">
+            <p className="truncate font-bold" style={{ fontFamily: "var(--font-display)" }}>
+              <Link href={`/recordings/${session.recording_id}`} className="text-link">
                 {work.title}
               </Link>
             </p>
           ) : (
-            <p className="font-medium text-gray-400">Recording #{session.recording_id}</p>
+            <p className="truncate" style={{ color: "var(--faint)" }}>Recording #{session.recording_id}</p>
           )}
           {composer && (
-            <p className="text-sm text-gray-500">
-              <Link href={`/composers/${composer.id}`} className="hover:underline">
+            <p className="text-sm" style={{ color: "var(--soft)" }}>
+              <Link href={`/composers/${composer.id}`} className="text-link">
                 {composer.name}
               </Link>
             </p>
           )}
           {(rec?.conductor || rec?.orchestra) && (
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="label-tag mt-1">
               {[rec.conductor?.name, rec.orchestra?.name].filter(Boolean).join(" · ")}
             </p>
           )}
         </div>
         <div className="text-right shrink-0">
-          <p className="text-xs text-gray-400">{formatDate(session.listened_at)}</p>
+          <p className="label-tag">{formatDate(session.listened_at)}</p>
           {!editing && <StarRating value={session.rating} />}
         </div>
       </div>
@@ -108,39 +109,45 @@ function SessionCard({
       {!editing ? (
         <>
           {session.notes && (
-            <p className="text-sm text-gray-600 mt-3 italic">"{session.notes}"</p>
+            <p className="text-sm mt-3 italic" style={{ color: "var(--soft)" }}>
+              &ldquo;{session.notes}&rdquo;
+            </p>
           )}
-          <div className="flex gap-3 mt-3">
+          <div className="flex gap-4 mt-3">
             <button
               onClick={() => setEditing(true)}
-              className="text-xs text-gray-400 hover:text-black transition-colors"
+              className="label-tag text-link"
             >
               Edit
             </button>
             <button
               onClick={handleDelete}
               disabled={deleting}
-              className="text-xs text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50"
+              className="label-tag transition-colors disabled:opacity-50"
+              style={{ color: "var(--faint)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--violet)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--faint)")}
             >
-              {deleting ? "Removing..." : "Remove"}
+              {deleting ? "Removing…" : "Remove"}
             </button>
           </div>
         </>
       ) : (
         <div className="mt-3 flex flex-col gap-3">
           <div>
-            <label className="text-xs text-gray-500 block mb-1">Rating</label>
+            <label className="label-tag block mb-1">Rating</label>
             <div className="flex gap-1">
               {[1, 2, 3, 4, 5].map((n) => (
                 <button
                   key={n}
                   type="button"
                   onClick={() => setRating(rating === n ? null : n)}
-                  className={`w-7 h-7 rounded text-xs font-medium border transition-colors ${
-                    rating === n
-                      ? "bg-black text-white border-black"
-                      : "text-gray-500 hover:border-gray-400"
-                  }`}
+                  className="w-7 h-7 rounded-lg text-xs font-medium transition-colors"
+                  style={{
+                    border: `1px solid ${rating === n ? "var(--violet)" : "var(--line)"}`,
+                    background: rating === n ? "var(--violet)" : "transparent",
+                    color: rating === n ? "#fff" : "var(--soft)",
+                  }}
                 >
                   {n}
                 </button>
@@ -151,20 +158,21 @@ function SessionCard({
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={2}
-            placeholder="Notes..."
-            className="w-full border rounded px-3 py-2 text-sm resize-none"
+            placeholder="Notes…"
+            className="field resize-none"
           />
-          <div className="flex gap-2">
+          <div className="flex gap-3 items-center">
             <button
               onClick={handleSave}
               disabled={saving}
-              className="bg-black text-white text-xs px-3 py-1.5 rounded-full hover:bg-gray-800 transition-colors disabled:opacity-50"
+              className="pill-btn"
             >
-              {saving ? "Saving..." : "Save"}
+              {saving ? "Saving…" : "Save"}
             </button>
             <button
               onClick={() => setEditing(false)}
-              className="text-xs text-gray-500 hover:text-black transition-colors"
+              className="text-sm text-link"
+              style={{ color: "var(--faint)" }}
             >
               Cancel
             </button>
@@ -192,14 +200,14 @@ export default function JournalPage() {
   }, [session, status]);
 
   if (status === "loading" || loading) {
-    return <main className="min-h-screen p-8 max-w-2xl mx-auto"><p className="text-gray-400">Loading...</p></main>;
+    return <main className="min-h-screen p-8 max-w-2xl mx-auto"><p className="label-tag">Loading…</p></main>;
   }
 
   if (!session) {
     return (
       <main className="min-h-screen p-8 max-w-2xl mx-auto">
-        <p className="text-gray-500">
-          <Link href="/login" className="underline hover:text-black">Log in</Link> to see your listening journal.
+        <p style={{ color: "var(--soft)" }}>
+          <Link href="/login" className="text-link">Log in</Link> to see your listening journal.
         </p>
       </main>
     );
@@ -207,13 +215,13 @@ export default function JournalPage() {
 
   return (
     <main className="min-h-screen p-8 max-w-2xl mx-auto">
-      <h1 className="text-4xl font-bold mb-2">Journal</h1>
-      <p className="text-gray-400 text-sm mb-8">Your listening history</p>
+      <h1 className="text-3xl font-extrabold mb-2" style={{ fontFamily: "var(--font-display)" }}>Journal</h1>
+      <p className="label-tag mb-8">Your listening history</p>
 
-      {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+      {error && <p className="text-sm mb-4" style={{ color: "var(--violet)" }}>{error}</p>}
 
       {sessions.length === 0 ? (
-        <p className="text-gray-500">No sessions logged yet. Find a recording and hit <strong>Log listen</strong>.</p>
+        <p style={{ color: "var(--soft)" }}>No sessions logged yet. Find a recording and hit <strong>Log listen</strong>.</p>
       ) : (
         <div className="flex flex-col gap-3">
           {sessions.map((s) => (
