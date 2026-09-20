@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getComposer, getWorks } from "../../lib/api";
+import WorkSearch from "../../components/WorkSearch";
 
 export default async function ComposerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -18,8 +19,11 @@ export default async function ComposerPage({ params }: { params: Promise<{ id: s
         <p className="text-gray-500 mb-8">{composer.nationality}</p>
       )}
       <h2 className="text-2xl font-semibold mb-4">Works</h2>
+      <WorkSearch composerId={composer.id} />
       {works.length === 0 ? (
-        <p className="text-gray-500">No works found.</p>
+        <p className="text-gray-500">
+          No works added yet — search above to find and add one.
+        </p>
       ) : (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
           {works.map((work) => (

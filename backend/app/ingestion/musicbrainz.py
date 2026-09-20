@@ -66,6 +66,26 @@ class MusicBrainzIngester:
         self.db.commit()
         return works
 
+    def search_works(self, query: str, composer_mbid: str, limit: int = 5) -> list[dict]:
+        result = musicbrainzngs.search_works(work=query, arid=composer_mbid, limit=limit)
+        return result.get("work-list", [])
+
+    def ingest_work(self, composer: Composer, work_mbid: str) -> Work:
+        existing = self.db.query(Work).filter(Work.musicbrainz_id == work_mbid).first()
+        if existing:
+            return existing
+
+        data = musicbrainzngs.get_work_by_id(work_mbid)["work"]
+        work = Work(
+            title=data["title"],
+            composer_id=composer.id,
+            musicbrainz_id=work_mbid,
+        )
+        self.db.add(work)
+        self.db.commit()
+        self.db.refresh(work)
+        return work
+
     def fetch_recordings_for_work(self, work_mbid: str) -> list[dict]:
         result = musicbrainzngs.get_work_by_id(work_mbid, includes=["recording-rels"])
         return result["work"].get("recording-relation-list", [])

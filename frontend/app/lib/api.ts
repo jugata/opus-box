@@ -114,6 +114,32 @@ export function getWork(id: string | number): Promise<Work> {
   return apiFetch(`/works/${id}`);
 }
 
+export interface WorkCandidate {
+  musicbrainz_id: string;
+  title: string;
+  disambiguation?: string;
+}
+
+export interface WorkSearchResult {
+  local: Work[];
+  candidates: WorkCandidate[];
+}
+
+export function searchWorks(composerId: string | number, q: string): Promise<WorkSearchResult> {
+  return apiFetch(`/works/search?composer_id=${composerId}&q=${encodeURIComponent(q)}`);
+}
+
+export async function importWork(
+  composerId: string | number,
+  musicbrainzId: string
+): Promise<Work> {
+  const res = await fetch(`${API}/works/import/${musicbrainzId}?composer_id=${composerId}`, {
+    method: "POST",
+  });
+  if (!res.ok) throw new Error(`Failed to import work (${res.status})`);
+  return res.json();
+}
+
 // ---------------------------------------------------------------------------
 // Conductors
 // ---------------------------------------------------------------------------
