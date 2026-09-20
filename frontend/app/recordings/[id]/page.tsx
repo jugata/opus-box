@@ -18,69 +18,42 @@ export default async function RecordingPage({ params }: { params: Promise<{ id: 
     ? `${Math.floor(recording.duration / 60)}:${String(recording.duration % 60).padStart(2, "0")}`
     : null;
 
+  const rows: [string, string | number][] = [
+    ...(conductor ? [["Conductor", conductor.name] as [string, string]] : []),
+    ...(orchestra ? [["Orchestra", orchestra.name] as [string, string]] : []),
+    ...(recording.label ? [["Label", recording.label] as [string, string]] : []),
+    ...(recording.year ? [["Year", recording.year] as [string, number]] : []),
+    ...(duration ? [["Duration", duration] as [string, string]] : []),
+    ...(work.genre ? [["Genre", work.genre] as [string, string]] : []),
+    ...(work.key ? [["Key", work.key] as [string, string]] : []),
+    ...(work.opus_number ? [["Opus", work.opus_number] as [string, string]] : []),
+  ];
+
   return (
     <main className="min-h-screen p-8 max-w-2xl mx-auto">
-      <Link href="/composers" className="text-blue-600 hover:underline text-sm mb-6 block">
+      <Link href="/composers" className="text-link text-sm mb-6 block">
         ← Back to Composers
       </Link>
 
-      <h1 className="text-3xl font-bold mb-1">{work.title}</h1>
-      <p className="text-gray-500 mb-8">
-        <Link href={`/composers/${composer.id}`} className="hover:underline">
+      <h1 className="text-3xl font-extrabold mb-1" style={{ fontFamily: "var(--font-display)" }}>{work.title}</h1>
+      <p className="mb-8">
+        <Link href={`/composers/${composer.id}`} className="text-link" style={{ color: "var(--soft)" }}>
           {composer.name}
         </Link>
       </p>
 
-      <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 text-sm">
-        {conductor && (
-          <>
-            <dt className="text-gray-500 font-medium">Conductor</dt>
-            <dd>{conductor.name}</dd>
-          </>
-        )}
-        {orchestra && (
-          <>
-            <dt className="text-gray-500 font-medium">Orchestra</dt>
-            <dd>{orchestra.name}</dd>
-          </>
-        )}
-        {recording.label && (
-          <>
-            <dt className="text-gray-500 font-medium">Label</dt>
-            <dd>{recording.label}</dd>
-          </>
-        )}
-        {recording.year && (
-          <>
-            <dt className="text-gray-500 font-medium">Year</dt>
-            <dd>{recording.year}</dd>
-          </>
-        )}
-        {duration && (
-          <>
-            <dt className="text-gray-500 font-medium">Duration</dt>
-            <dd>{duration}</dd>
-          </>
-        )}
-        {work.genre && (
-          <>
-            <dt className="text-gray-500 font-medium">Genre</dt>
-            <dd>{work.genre}</dd>
-          </>
-        )}
-        {work.key && (
-          <>
-            <dt className="text-gray-500 font-medium">Key</dt>
-            <dd>{work.key}</dd>
-          </>
-        )}
-        {work.opus_number && (
-          <>
-            <dt className="text-gray-500 font-medium">Opus</dt>
-            <dd>{work.opus_number}</dd>
-          </>
-        )}
-      </dl>
+      <div className="app-card">
+        {rows.map(([label, value], i) => (
+          <div
+            key={label}
+            className="grid grid-cols-[8rem_1fr] gap-x-6 py-2.5"
+            style={{ borderBottom: i === rows.length - 1 ? "none" : "1px solid var(--line)" }}
+          >
+            <dt className="label-tag self-center">{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </div>
 
       <LogSessionButton recordingId={recording.id} />
     </main>

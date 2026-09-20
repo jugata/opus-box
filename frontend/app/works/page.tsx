@@ -6,18 +6,20 @@ export default async function WorksPage() {
   const composerNames = new Map(composers.map((c) => [c.id, c.name]));
 
   return (
-    <main className="min-h-screen p-8">
-      <h1 className="text-4xl font-bold mb-6">Works</h1>
+    <main className="min-h-screen p-8 max-w-5xl mx-auto">
+      <h1 className="text-3xl font-extrabold mb-8" style={{ fontFamily: "var(--font-display)" }}>
+        Works
+      </h1>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {works.map((work) => (
           <Link key={work.id} href={`/works/${work.id}`}>
-            <div className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
-              <h2 className="text-lg font-semibold">{work.title}</h2>
-              <p className="text-gray-500 text-sm mt-1">
+            <div className="app-card cursor-pointer">
+              <h2 className="font-bold text-base" style={{ fontFamily: "var(--font-display)" }}>{work.title}</h2>
+              <p className="text-sm mt-1" style={{ color: "var(--soft)" }}>
                 {composerNames.get(work.composer_id) ?? "Unknown composer"}
               </p>
               {work.opus_number && (
-                <p className="text-gray-400 text-xs mt-1">{work.opus_number}</p>
+                <p className="label-tag mt-1.5">{work.opus_number}</p>
               )}
             </div>
           </Link>
